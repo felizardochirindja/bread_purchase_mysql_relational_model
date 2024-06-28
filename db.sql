@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `cdp`.`monthly_orders` (
   `limit_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `month` TINYINT UNSIGNED NOT NULL,
   `remain` DECIMAL(10,2) UNSIGNED NOT NULL,
+  `status` ENUM('overdue', 'pending', 'parcelada', 'paid') NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_order_product_idx` (`product_id` ASC) VISIBLE,
   CONSTRAINT `fk_order_product`
@@ -74,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `cdp`.`daily_orders` (
   `quantity` TINYINT NOT NULL,
   `product_price` DECIMAL(10,2) NOT NULL,
   `notes` TINYTEXT NOT NULL,
+  `status` ENUM('paid', 'pending', 'overdue') NOT NULL,
   PRIMARY KEY (`id`, `monthly_order_id`),
   INDEX `fk_daily_orders_monthly_orders1_idx` (`monthly_order_id` ASC) VISIBLE,
   CONSTRAINT `fk_daily_orders_monthly_orders1`
