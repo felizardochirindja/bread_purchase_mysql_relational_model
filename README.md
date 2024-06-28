@@ -1,6 +1,5 @@
 # bread_purchase_relational_model
 
-products - representa os produtos que podem ser encomendados/pedidos
-monthly_orders - é o agrupamento de todas as encomendas/pedidos que foram feitas durante o mes
-daily_orders - representa as encomendas/pedidos que são feitos diariamente, que por sua vez fazem parte de um certo mes
-payments - representacao dos pagamentos das encomendas/pedidos, num periodo/intervalo especifico dentro do mes
+Este banco de dados visa gerenciar compras diárias de pão e rastrear todo o ciclo desde a compra do produto ao pagamento.
+Para tal são armazenados detalhes de produtos, bem como são registradas as encomendas mensais que agrupam pedidos diários.
+Este processo inclui também o registro dos pagamentos, que podem ser efectuados em parcelas
