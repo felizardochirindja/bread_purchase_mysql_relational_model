@@ -18,7 +18,7 @@ USE `cdp` ;
 -- Table `cdp`.`products`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `cdp`.`products` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `price` DECIMAL(10,2) UNSIGNED NOT NULL,
   `created_at` DATETIME NOT NULL,
