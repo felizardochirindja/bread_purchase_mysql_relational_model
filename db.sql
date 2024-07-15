@@ -5,19 +5,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema cdp
+-- Schema bread_order
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema cdp
+-- Schema bread_order
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `cdp` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `cdp` ;
+CREATE SCHEMA IF NOT EXISTS `bread_order` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `bread_order` ;
 
 -- -----------------------------------------------------
--- Table `cdp`.`products`
+-- Table `bread_order`.`products`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`products` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`products` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `price` DECIMAL(10,2) UNSIGNED NOT NULL,
@@ -30,10 +30,10 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`months`
+-- Table `bread_order`.`months`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`months` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `bread_order`.`months` (
+  `id` TINYINT NOT NULL,
   `name` VARCHAR(100) NOT NULL,
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
   PRIMARY KEY (`id`))
@@ -41,15 +41,15 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`monthly_orders`
+-- Table `bread_order`.`monthly_orders`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`monthly_orders` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`monthly_orders` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_id` BIGINT UNSIGNED NOT NULL,
   `month_id` BIGINT NOT NULL,
   `remain` DECIMAL(10,2) UNSIGNED NOT NULL,
-  `status` ENUM('overdue', 'pending', 'parcelada', 'paid') NOT NULL,
-  `year` TINYINT NOT NULL,
+  `status` ENUM('overdue', 'pending', 'installments', 'paid') NOT NULL,
+  `year` SMALLINT NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
@@ -57,24 +57,22 @@ CREATE TABLE IF NOT EXISTS `cdp`.`monthly_orders` (
   INDEX `fk_monthly_orders_months1_idx` (`month_id` ASC) VISIBLE,
   CONSTRAINT `fk_order_product`
     FOREIGN KEY (`product_id`)
-    REFERENCES `cdp`.`products` (`id`)
+    REFERENCES `bread_order`.`products` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_monthly_orders_months1`
     FOREIGN KEY (`month_id`)
-    REFERENCES `cdp`.`months` (`id`)
+    REFERENCES `bread_order`.`months` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`payments`
+-- Table `bread_order`.`payments`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`payments` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`payments` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `from` DATE NOT NULL,
-  `to` DATE NOT NULL,
   `total` DECIMAL(10,2) UNSIGNED NOT NULL,
   `paid_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` ENUM('periodic', 'daily') NOT NULL,
@@ -84,9 +82,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`orders`
+-- Table `bread_order`.`orders`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`orders` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`orders` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `day` TINYINT UNSIGNED NOT NULL,
   `total` DECIMAL(10,2) NOT NULL,
@@ -99,9 +97,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`daily_orders`
+-- Table `bread_order`.`daily_orders`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`daily_orders` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`daily_orders` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `monthly_order_id` BIGINT UNSIGNED NOT NULL,
   `order_id` BIGINT UNSIGNED NOT NULL,
@@ -110,21 +108,21 @@ CREATE TABLE IF NOT EXISTS `cdp`.`daily_orders` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_monthly_orders_has_daily_orders_monthly_orders1`
     FOREIGN KEY (`monthly_order_id`)
-    REFERENCES `cdp`.`monthly_orders` (`id`)
+    REFERENCES `bread_order`.`monthly_orders` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_monthly_orders_has_daily_orders_daily_orders1`
     FOREIGN KEY (`order_id`)
-    REFERENCES `cdp`.`orders` (`id`)
+    REFERENCES `bread_order`.`orders` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cdp`.`order_payments`
+-- Table `bread_order`.`order_payments`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `cdp`.`order_payments` (
+CREATE TABLE IF NOT EXISTS `bread_order`.`order_payments` (
   `daily_order_id` BIGINT NOT NULL,
   `payment_id` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`daily_order_id`, `payment_id`),
@@ -132,12 +130,12 @@ CREATE TABLE IF NOT EXISTS `cdp`.`order_payments` (
   INDEX `fk_daily_orders_has_payments_daily_orders1_idx` (`daily_order_id` ASC) VISIBLE,
   CONSTRAINT `fk_daily_orders_has_payments_daily_orders1`
     FOREIGN KEY (`daily_order_id`)
-    REFERENCES `cdp`.`daily_orders` (`id`)
+    REFERENCES `bread_order`.`daily_orders` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_daily_orders_has_payments_payments1`
     FOREIGN KEY (`payment_id`)
-    REFERENCES `cdp`.`payments` (`id`)
+    REFERENCES `bread_order`.`payments` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
