@@ -41,6 +41,19 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `bread_order`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bread_order`.`users` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
+
+
+-- -----------------------------------------------------
 -- Table `bread_order`.`monthly_orders`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bread_order`.`monthly_orders` (
@@ -52,9 +65,11 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`monthly_orders` (
   `year` SMALLINT NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL,
+  `user_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_order_product_idx` (`product_id` ASC) VISIBLE,
   INDEX `fk_monthly_orders_months1_idx` (`month_id` ASC) VISIBLE,
+  INDEX `fk_monthly_orders_user1_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_order_product`
     FOREIGN KEY (`product_id`)
     REFERENCES `bread_order`.`products` (`id`)
@@ -63,6 +78,11 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`monthly_orders` (
   CONSTRAINT `fk_monthly_orders_months1`
     FOREIGN KEY (`month_id`)
     REFERENCES `bread_order`.`months` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_monthly_orders_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `bread_order`.`users` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -77,7 +97,14 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`payments` (
   `paid_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` ENUM('periodic', 'daily') NOT NULL,
   `notes` TINYTEXT NOT NULL,
-  PRIMARY KEY (`id`))
+  `user_id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_payments_users1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_payments_users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `bread_order`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -92,7 +119,14 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`orders` (
   `product_price` DECIMAL(10,2) NOT NULL,
   `notes` TINYTEXT NOT NULL,
   `status` ENUM('paid', 'pending', 'overdue') NOT NULL,
-  PRIMARY KEY (`id`))
+  `user_id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_orders_users1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_orders_users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `bread_order`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
