@@ -15,32 +15,6 @@ CREATE SCHEMA IF NOT EXISTS `bread_order` DEFAULT CHARACTER SET utf8mb4 COLLATE 
 USE `bread_order` ;
 
 -- -----------------------------------------------------
--- Table `bread_order`.`products`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bread_order`.`products` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `price` DECIMAL(10,2) UNSIGNED NOT NULL,
-  `description` TINYTEXT NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `bread_order`.`months`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `bread_order`.`months` (
-  `id` TINYINT NOT NULL,
-  `name` VARCHAR(100) NOT NULL,
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `bread_order`.`users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bread_order`.`users` (
@@ -51,6 +25,40 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`users` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
+
+
+-- -----------------------------------------------------
+-- Table `bread_order`.`products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bread_order`.`products` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `price` DECIMAL(10,2) UNSIGNED NOT NULL,
+  `description` TINYTEXT NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
+  INDEX `fk_products_users1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_products_users1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `bread_order`.`users` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bread_order`.`months`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `bread_order`.`months` (
+  `id` TINYINT NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `position` TINYINT UNSIGNED NOT NULL,
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
@@ -66,6 +74,7 @@ CREATE TABLE IF NOT EXISTS `bread_order`.`monthly_orders` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL,
   `user_id` BIGINT NOT NULL,
+  `total` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_order_product_idx` (`product_id` ASC) VISIBLE,
   INDEX `fk_monthly_orders_months1_idx` (`month_id` ASC) VISIBLE,
